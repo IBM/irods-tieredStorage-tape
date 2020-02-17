@@ -15,9 +15,9 @@ In a solution integrating iRODS with IBM Spectrum Scale and IBM Spectrum Archive
 
 The integration of iRODS with IBM Spectrum Archive EE as presented in this project provides the following sub-projects:
 - [prevent transparent recalls](recall/) of files that are on tape and instead collect files that are requested by the iRODS user and recall them in a tape optimized manner
-- give the iRODS user the capabilitiy to obtain the migration state of files 
-- allow setting storage quota for users that apply to all files regardless if stored on disk or on tape in the underlying 
-- determine the file type for each new file and add it to the iRODS metadata catalog (iCAT) 
+- [determine migration state](filestate/) from an iRODS user perspective
+- [setting storage quota](quota/) for users that apply to all files regardless if stored on disk or on tape in the underlying 
+- [determine and add the file type](filetype/) to the iRODS metadata catalog (iCAT) 
 
 
 ## Disclaimer and license
