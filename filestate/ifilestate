@@ -1,0 +1,26 @@
+#!/bin/bash
+# 
+# Invokation: ifstat path-and-file-name
+#
+# # Installation
+# - install this in /usr/local/bin on the client
+#
+# Todo:
+# - determine the current directory from where the user invokes the call (ipwd just gives the base path in irods)
+
+rname="/etc/irods/filestate.r"
+
+ZONE="archive"
+IRODSMP="archive"
+
+#logical path to file
+lfname="$1"
+
+#physical path to file
+fname=$(echo "$1" | sed -e "s/$ZONE/$IRODSMP/1")
+
+if [[ ! -z $fname && -a $rname ]]; then
+  irule  -s -F $rname  "*f=$fname" "*lf=$lfname"
+else
+  echo "Syntax: ifilestate irods-path-and-filename"
+fi
