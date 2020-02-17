@@ -1,6 +1,7 @@
 # Introduction
 
-This project includes examples for integrating iRODS software with IBM Spectrum Scale(TM) and Spectrum Archive(TM) Enterprise Edition.
+
+This project includes examples for integrating iRODS software with IBM Spectrum Scale™ and Spectrum Archive™ Enterprise Edition.
 
 The [iRODS](https://irods.org/about/) consortium brings together businesses, research organizations, universities, and government agencies to ensure the sustainability of iRODS software by:
 - Guiding further development of the software;
@@ -9,7 +10,7 @@ The [iRODS](https://irods.org/about/) consortium brings together businesses, res
 
 The [iRODS software](https://irods.org/download/) is a data management layer that sits above the storage that contain data, and below domain-specific applications [1]. Because iRODS has a plugin framework and is technology-agnostic, it provides insulation from vendor lock-in. The data virtualization capabilities of iRODS make it a one-stop shop for all data regardless of the heterogeneity of storage devices. Whether data is stored on a local hard drive, on remote file systems or object storage, iRODS' virtualization layer presents data resources in the classic files and folders format, within a single namespace.
 
-[IBM Spectrum Scale(TM)](https://www.ibm.com/us-en/marketplace/scale-out-file-and-object-storage) is licensed software providing a UNIX filesystem that supports tiered storage. [IBM Spectrum Archive(TM) Enterprise Edition](https://www.ibm.com/us-en/marketplace/data-archive) is a licensed software that represents the tape storage tier within IBM Spectrum Scale. As such it controls all tape operation including the migration and recall of files from the disk tier to the tape tier. 
+[IBM Spectrum Scale™](https://www.ibm.com/us-en/marketplace/scale-out-file-and-object-storage) is licensed software providing a UNIX filesystem that supports tiered storage. [IBM Spectrum Archive™ Enterprise Edition](https://www.ibm.com/us-en/marketplace/data-archive) is a licensed software that represents the tape storage tier within IBM Spectrum Scale. As such it controls all tape operation including the migration and recall of files from the disk tier to the tape tier. 
 
 In a solution integrating iRODS with IBM Spectrum Scale and IBM Spectrum Archive, the tiered storage file system is provided by IBM Spectrum Scale whereby the tape tier is managed by IBM Spectrum Archive. This tiered storage file system is exported to the iRODS server managing the iRODS zone via NFS. The iRODS zone of the user contains the NFS exported tiered storage file system as storage resource of type `unixfilesystem`. 
 
