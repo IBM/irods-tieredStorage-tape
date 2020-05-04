@@ -22,7 +22,7 @@ The integration of iRODS with IBM Spectrum Archive EE as presented in this proje
 
 
 ## Disclaimer and license
-This project is under [MIT license](LICENSE).
+This project is released under the terms of the [MIT license](LICENSE).
 
 The integration of iRODS with IBM Spectrum Archive is an open source project and NOT an IBM product. As such it is not supported by any official IBM product support. 
 
