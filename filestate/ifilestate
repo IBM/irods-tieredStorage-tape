@@ -1,26 +1,108 @@
 #!/bin/bash
+# set -xv
+################################################################################
+# The MIT License (MIT)                                                        #
+#                                                                              #
+# Copyright (c) 2020 Nils Haustein, Mauro Tridic               				   #
+#                                                                              #
+# Permission is hereby granted, free of charge, to any person obtaining a copy #
+# of this software and associated documentation files (the "Software"), to deal#
+# in the Software without restriction, including without limitation the rights #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell    #
+# copies of the Software, and to permit persons to whom the Software is        #
+# furnished to do so, subject to the following conditions:                     #
+#                                                                              #
+# The above copyright notice and this permission notice shall be included in   #
+# all copies or substantial portions of the Software.                          #
+#                                                                              #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR   #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,     #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE  #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER       #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,#
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE#
+# SOFTWARE.                                                                    #
+################################################################################
+#-------------------------------------------------------------------------------
+# Program Name: ifilestate
+#
+# Purpose: new irods client command that checks migration state of a file and returns the state
+#
+# Authors: M. Tridici, CMCC (mauro.tridici@cmcc.it), N. Haustein, IBM (haustein@de.ibm.com)
+#
+# Invokation: ifstat [irods-path-and-filename|filename] || -a
 # 
-# Invokation: ifstat path-and-file-name
+# Shows the migration status of a file
+# -a shows the migration state of all files in the current collection
 #
-# # Installation
-# - install this in /usr/local/bin on the client
+#---------------------------------------------------------------------------------------
 #
-# Todo:
-# - determine the current directory from where the user invokes the call (ipwd just gives the base path in irods)
+# Installation
+# - install the irods rule /etc/irods/filestate.r on the client
+# - install the filestate.sh microservice in /var/lib/irods/msiExecCmd_bin
+# - install ifilestate in /usr/local/bin
+#---------------------------------------------------------------------------------------
+# Change History
+# 02/10/20 Nils: first implementation
+# 05/27/20 Mauro: convert given file name to irods specific filename
+#
 
-rname="/etc/irods/filestate.r"
-
+######################################################################
+# configurable parameters
+######################################################################
+# Name of the irods zone
 ZONE="archive"
+# name of the mount point where the Spectrum Scale file system is mounted
 IRODSMP="archive"
 
+# This is the rule we created to check the file state
+rname="/etc/irods/filestate.r"
+
+# some syntax checking
+if [[ -z $1 ]] || [[ `expr "$1" : ".*[!@#\$%^\&*()+\"\|\'].*"` -gt 0  ]]; then
+  echo "Syntax: ifilestate irods-path-and-filename|filename"
+  echo "Use -a option to check all files state in current collection." 
+  echo "Wildcards characters are not supported!"
+  exit
+fi
+
+#determine the current dir
+session=$(echo $PPID)
+session_env_file=$HOME/.irods/irods_environment.json.$session
+home_idir=$(ipwd)
+
 #logical path to file
-lfname="$1"
+lfname=$(echo $1 | sed "s#$home_idir##g" )
+
+if [ -f "$session_env_file" ]; then
+    current_idir=$(grep cwd $session_env_file | awk '{print $2}' | sed s/\"//g)
+else
+    current_idir=$home_dir
+fi
+
+# if -a is specified than get all file names in the collection
+if [[ "$1" == '-a' ]]; then
+  ils $current_idir > list
+  sed -i '/\:/d' list
+  sed -i '/C\-/d' list
+  while read line
+   do
+    fname=$(echo $current_idir"/"$line | sed -e "s/$ZONE/$IRODSMP/1")
+    lfname=$(echo $current_idir"/"$line)
+    irule  -s -F $rname  "*f=$fname" "*lf=$lfname"
+   done < list
+  exit 0
+else
+  full_path=$current_idir"/"$lfname
+  lfname=$full_path
+fi
 
 #physical path to file
-fname=$(echo "$1" | sed -e "s/$ZONE/$IRODSMP/1")
+fname=$(echo "$lfname" | sed -e "s/$ZONE/$IRODSMP/1")
 
+# run the rule
 if [[ ! -z $fname && -a $rname ]]; then
   irule  -s -F $rname  "*f=$fname" "*lf=$lfname"
-else
-  echo "Syntax: ifilestate irods-path-and-filename"
 fi
+
+exit 0
