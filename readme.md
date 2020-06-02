@@ -70,13 +70,18 @@ his new rule needs to be installed on the iRODS client in /etc/irods. If this di
 
 [filestate.sh](filestate/filestate.sh) is a new iRODS microservice that checks if the file is migrated by performing a stat-command and comparing the block size and the file size. If the block size is 0 and the file size is greater than 0 then the file is migrated. The `filestate.sh` microservice return a string “0” if the file is migrated and “1” if the file is not migrated. This string is evaluated by the `filestate.r` rule. The filestate.sh script must be installed in the iRODS server directory for the microservices (/var/lib/irods/msiExecCmd_bin).
 
-If these componentes are installed the iRODS user can use the new `ifilestate` command to determine the migration state of a file:
+If these componentes are installed the iRODS user can use the new `ifilestate` command to determine the migration state of a file. The file name to check the state for is given as argument with the `ifilestate` command. The file name can be the file name relative to the current collection or it can be the full iRODS path and file name. 
 
-	$ ifilestate /archive/home/mia/col1/file1
+In the first example the state of file name file1 is inquired:
+
+	$ ifilestate file1
 	Level 0: file /archive/home/mia/col1/file1 is MIGRATED
 
-	$ ifilestate /archive/home/mia/col1/file0
+In the second example the state of all files in the current collection are inquired:
+
+	$ ifilestate -a
 	Level 0: file /archive/home/mia/col1/file0 is NOT migrated
+	Level 0: file /archive/home/mia/col1/file1 is MIGRATED
 
 
 
